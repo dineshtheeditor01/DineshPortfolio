@@ -172,6 +172,7 @@ export default function WorksPreview() {
 
   const [muted, setMuted] = useState(true);
   const [playing, setPlaying] = useState(false);
+  const [buffering, setBuffering] = useState(false);
 
   /* ── Play / Pause toggle ── */
   const togglePlay = useCallback(() => {
@@ -249,6 +250,7 @@ export default function WorksPreview() {
           });
           const v = videoElRef.current;
           if (v && !v.src) {
+            setBuffering(true);
             v.src = "/videos/works/Video 04 - KlickEdu Take Off Edit.mp4";
             v.load();
             v.play().then(() => setPlaying(true)).catch(() => {});
@@ -312,12 +314,25 @@ export default function WorksPreview() {
               muted
               loop
               playsInline
-              preload="none"
+              preload="metadata"
               poster="/images/reel-poster.jpg"
               style={S.videoEl}
-              onPlay={() => setPlaying(true)}
+              onPlay={() => { setPlaying(true); setBuffering(false); }}
               onPause={() => setPlaying(false)}
+              onCanPlay={() => setBuffering(false)}
+              onWaiting={() => setBuffering(true)}
             />
+
+            {/* Buffering spinner */}
+            {buffering && (
+              <div style={{
+                position: "absolute", inset: 0, display: "flex",
+                alignItems: "center", justifyContent: "center",
+                zIndex: 2, pointerEvents: "none",
+              }}>
+                <div className="wp-spinner" />
+              </div>
+            )}
 
             {/* 10% bottom gradient */}
             <div style={S.videoGrad} />
@@ -366,6 +381,17 @@ export default function WorksPreview() {
           Browse Full Portfolio →
         </Link>
       </div>
+
+      <style>{`
+        @keyframes wp-spin { to { transform: rotate(360deg); } }
+        .wp-spinner {
+          width: 32px; height: 32px;
+          border: 2px solid rgba(255,255,255,0.12);
+          border-top-color: rgba(255,255,255,0.7);
+          border-radius: 50%;
+          animation: wp-spin 0.75s linear infinite;
+        }
+      `}</style>
     </section>
   );
 }

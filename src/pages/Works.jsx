@@ -399,8 +399,9 @@ function VideoPlayer({ src, orientation }) {
         ref={vidRef}
         loop
         playsInline
-        preload="none"
+        preload="metadata"
         onCanPlay={() => setBuffering(false)}
+        onWaiting={() => setBuffering(true)}
         onEnded={() => setPlaying(false)}
         style={{
           width: "100%",

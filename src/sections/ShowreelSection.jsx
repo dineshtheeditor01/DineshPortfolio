@@ -13,7 +13,12 @@ export default function ShowreelSection() {
         trigger: root.current,
         start: "top 80%",
         once: true,
-        onEnter: () => vidRef.current?.play().catch(() => {}),
+        onEnter: () => {
+          const v = vidRef.current;
+          if (!v) return;
+          v.load();
+          v.play().catch(() => {});
+        },
       });
     }, root);
     return () => ctx.revert();
@@ -49,12 +54,11 @@ export default function ShowreelSection() {
             muted
             loop
             playsInline
-            preload="none"
+            preload="metadata"
             poster="/images/reel-poster.jpg"
+            src="/videos/showreel.mp4"
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          >
-            <source src="/videos/showreel.mp4" type="video/mp4" />
-          </video>
+          />
 
           <div
             style={{

@@ -1,0 +1,440 @@
+@import "tailwindcss";
+/* Google Fonts loaded via <link> in index.html — avoids render-blocking @import */
+
+/* Hide native cursor everywhere when custom cursor is active */
+html.custom-cursor-active,
+html.custom-cursor-active * {
+  cursor: none !important;
+}
+
+/* ─── Local Fonts ── */
+@font-face {
+  font-family: 'ClashDisplay';
+  src: url('/fonts/ClashDisplay-Extralight.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ClashDisplay';
+  src: url('/fonts/ClashDisplay-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ClashDisplay';
+  src: url('/fonts/ClashDisplay-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ClashDisplay';
+  src: url('/fonts/ClashDisplay-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ClashDisplay';
+  src: url('/fonts/ClashDisplay-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ClashDisplay';
+  src: url('/fonts/ClashDisplay-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Clausten';
+  src: url('/fonts/clausten.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TimesLTStd';
+  src: url('/fonts/TimesLTStd-Semibold.ttf') format('opentype');
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ─────────────────────────────────────────
+   TOKENS — single source of truth
+───────────────────────────────────────── */
+:root {
+  --bg: #0B0B0B;
+  --surface: #141414;
+  --surface-2: #1C1C1C;
+
+  --text: #F0F0F0;
+  --text-muted: #868686;
+  --text-dim: #c6c6c6;
+
+  --accent: #39d401;
+  --accent-dim: rgba(130, 232, 75, 0.1);
+  --accent-glow: rgba(125, 232, 75, 0.2);
+
+  --border: rgba(255, 255, 255, 0.07);
+  --border-mid: rgba(255, 255, 255, 0.12);
+
+  --font-display: "ClashDisplay-Bold", sans-serif;
+  --font-display-1: 'clausten', sans-serif;
+  --font-display-2: 'Bebas Neue', sans-serif;
+  --font-body: "Montserrat", sans-serif;
+  --font-mono: 'Clausten',sans-serif;
+
+  --container: 1160px;
+  --pad-x: clamp(24px, 5vw, 60px);
+  --section-y: clamp(72px, 11vw, 130px);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Typography scale — single source of truth ──
+     Adjust here → every component using var(--fs-*) updates instantly */
+  --fs-label: 12px;
+  /* section tags, accent labels  */
+  --fs-label-sm: 12px;
+  /* small mono: badges, tags     */
+  --fs-mono-xs: 10px;
+  /* ultra-small: counts, TC      */
+  --fs-body: clamp(15px, 1.8vw, 17px);
+  /* main body paragraphs         */
+  --fs-body-sm: clamp(13px, 1.5vw, 15px);
+  /* secondary body / captions    */
+
+  /* ── Section heading scale ──
+     Change --fs-section-heading → all CRAFTING/STORIES-style headings update */
+  --fs-section-heading: clamp(40px, 7vw, 84px);
+  --heading-stroke: 1px rgba(255, 255, 255, 0.5);
+  --heading-indent: clamp(20px, 4vw, 56px);
+}
+
+/* ─── Reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* ─── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+}
+
+::selection {
+  background: var(--accent);
+  color: #000;
+}
+
+/* ─── Layout ── */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--pad-x);
+}
+
+.section {
+  padding: var(--section-y) 0;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ─────────────────────────────────────────
+   TYPOGRAPHY — change here = updates everywhere
+───────────────────────────────────────── */
+.t-hero {
+  font-family: var(--font-display-1);
+  font-size: clamp(72px, 18vw, 130px);
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  opacity: .98;
+}
+
+.t-hero-outline {
+  font-family: var(--font-display-1);
+  font-size: clamp(72px, 18vw, 130px);
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.65);
+}
+
+.t-heading {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 7vw, 72px);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  font-weight: 900;
+}
+
+.t-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.t-label-accent {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.t-body {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--text-muted);
+}
+
+.t-gradient {
+  background: linear-gradient(135deg, #F0F0F0 30%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label-sm);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: all 0.22s var(--ease);
+  white-space: nowrap;
+}
+
+.btn-solid {
+  padding: 13px 28px;
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+}
+
+.btn-solid:hover {
+  opacity: 0.82;
+}
+
+.btn-outline {
+  padding: 12px 26px;
+  border: 1px solid var(--border-mid);
+  color: var(--text-muted);
+}
+
+.btn-outline:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ─── Nav ── */
+.nav-link {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label-sm);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  position: relative;
+  transition: color 0.2s;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.4s var(--ease);
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--text);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* ─── Bubble menu backdrop ── */
+.bubble-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 11, 11, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease);
+}
+
+.bubble-backdrop.is-open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ─── Scroll progress ── */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: var(--accent);
+  z-index: 9999;
+  transition: width 0.05s linear;
+}
+
+/* ─── Marquee ── */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* ─── Hero portrait frame ── */
+.portrait-frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.portrait-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--bg) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* ─── Scroll-reveal utility classes (used alongside GSAP) ── */
+[data-reveal] {
+  will-change: transform, opacity;
+}
+
+/* Hover lift for interactive cards */
+.hover-lift {
+  transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* Accent underline for links */
+.accent-underline {
+  position: relative;
+}
+
+.accent-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.35s var(--ease);
+}
+
+.accent-underline:hover::after {
+  width: 100%;
+}
+
+/* ─── Noise texture overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px;
+}

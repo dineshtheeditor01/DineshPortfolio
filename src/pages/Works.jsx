@@ -339,36 +339,42 @@ const T = {
    VIDEO PLAYER — autoplay, play/pause, mute controls
    Used in both portrait and landscape detail layouts
 ═══════════════════════════════════════════════════════════════ */
-function VideoPlayer({ src, orientation, catId }) {
+function VideoPlayer({ src, orientation }) {
   const vidRef = useRef(null);
+  const [loaded, setLoaded] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
 
-  /* autoplay muted when component mounts / src changes */
+  /* reset when src changes (navigating categories) */
   useEffect(() => {
+    setLoaded(false);
+    setPlaying(false);
+    setMuted(true);
+  }, [src]);
+
+  const startPlayback = useCallback(() => {
     const v = vidRef.current;
     if (!v) return;
-    v.muted = true;
-    setMuted(true);
-    setPlaying(false);
-    v.load();
-    v.play()
-      .then(() => setPlaying(true))
-      .catch(() => {});
-  }, [src]);
+    if (!loaded) {
+      v.src = src;
+      v.muted = true;
+      v.load();
+      setLoaded(true);
+    }
+    v.play().then(() => setPlaying(true)).catch(() => {});
+  }, [src, loaded]);
 
   const togglePlay = useCallback(() => {
     const v = vidRef.current;
     if (!v) return;
+    if (!loaded) { startPlayback(); return; }
     if (v.paused) {
-      v.play()
-        .then(() => setPlaying(true))
-        .catch(() => {});
+      v.play().then(() => setPlaying(true)).catch(() => {});
     } else {
       v.pause();
       setPlaying(false);
     }
-  }, []);
+  }, [loaded, startPlayback]);
 
   const toggleMute = useCallback((e) => {
     e.stopPropagation();
@@ -377,8 +383,6 @@ function VideoPlayer({ src, orientation, catId }) {
     v.muted = !v.muted;
     setMuted(v.muted);
   }, []);
-
-  const handleEnded = () => setPlaying(false);
 
   const aspectRatio = orientation === "portrait" ? "9/16" : "16/9";
 
@@ -398,8 +402,8 @@ function VideoPlayer({ src, orientation, catId }) {
         ref={vidRef}
         loop
         playsInline
-        preload="metadata"
-        onEnded={handleEnded}
+        preload="none"
+        onEnded={() => setPlaying(false)}
         onClick={togglePlay}
         style={{
           width: "100%",
@@ -408,96 +412,117 @@ function VideoPlayer({ src, orientation, catId }) {
           display: "block",
           cursor: "pointer",
         }}
-      >
-        <source src={src} type="video/mp4" />
-      </video>
+      />
 
       {/* Bottom gradient for control readability */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background:
-            "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 40%)",
+          background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 40%)",
           pointerEvents: "none",
         }}
       />
 
-      {/* Controls bar — always visible */}
-      <div
-        className="vid-controls"
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: "clamp(10px,2vw,16px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          zIndex: 2,
-        }}
-      >
-        {/* Play / Pause */}
-        <button
+      {/* Big centered play button — shown before first play */}
+      {!playing && (
+        <div
           onClick={togglePlay}
           style={{
+            position: "absolute",
+            inset: 0,
             display: "flex",
             alignItems: "center",
-            gap: 8,
-            background: "rgba(255,255,255,0.1)",
-            border: "1px solid rgba(255,255,255,0.18)",
-            backdropFilter: "blur(8px)",
-            color: "#fff",
-            padding: "6px 14px",
+            justifyContent: "center",
+            zIndex: 3,
             cursor: "pointer",
-            fontFamily: "var(--font-mono)",
-            fontSize: FS.monoXs,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            transition: "background 0.2s",
           }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.background = "rgba(255,255,255,0.2)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.background = "rgba(255,255,255,0.1)")
-          }
         >
-          {playing ? <IconPause /> : <IconPlay />}
-          <span>{playing ? "Pause" : "Play"}</span>
-        </button>
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.12)",
+              border: "1px solid rgba(255,255,255,0.28)",
+              backdropFilter: "blur(8px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <IconPlay />
+          </div>
+        </div>
+      )}
 
-        {/* Mute / Unmute */}
-        <button
-          onClick={toggleMute}
+      {/* Controls bar — visible once loaded */}
+      {loaded && (
+        <div
+          className="vid-controls"
           style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: "clamp(10px,2vw,16px)",
             display: "flex",
             alignItems: "center",
-            gap: 8,
-            background: "rgba(255,255,255,0.1)",
-            border: "1px solid rgba(255,255,255,0.18)",
-            backdropFilter: "blur(8px)",
-            color: muted ? "rgba(255,255,255,0.55)" : "#fff",
-            padding: "6px 14px",
-            cursor: "pointer",
-            fontFamily: "var(--font-mono)",
-            fontSize: FS.monoXs,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            transition: "background 0.2s, color 0.2s",
+            justifyContent: "space-between",
+            zIndex: 4,
           }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.background = "rgba(255,255,255,0.2)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.background = "rgba(255,255,255,0.1)")
-          }
         >
-          {muted ? <IconMute /> : <IconUnmute />}
-          <span>{muted ? "Unmute" : "Mute"}</span>
-        </button>
-      </div>
+          <button
+            onClick={togglePlay}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              background: "rgba(255,255,255,0.1)",
+              border: "1px solid rgba(255,255,255,0.18)",
+              backdropFilter: "blur(8px)",
+              color: "#fff",
+              padding: "6px 14px",
+              cursor: "pointer",
+              fontFamily: "var(--font-mono)",
+              fontSize: FS.monoXs,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              transition: "background 0.2s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.2)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+          >
+            {playing ? <IconPause /> : <IconPlay />}
+            <span>{playing ? "Pause" : "Play"}</span>
+          </button>
+
+          <button
+            onClick={toggleMute}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              background: "rgba(255,255,255,0.1)",
+              border: "1px solid rgba(255,255,255,0.18)",
+              backdropFilter: "blur(8px)",
+              color: muted ? "rgba(255,255,255,0.55)" : "#fff",
+              padding: "6px 14px",
+              cursor: "pointer",
+              fontFamily: "var(--font-mono)",
+              fontSize: FS.monoXs,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              transition: "background 0.2s, color 0.2s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.2)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+          >
+            {muted ? <IconMute /> : <IconUnmute />}
+            <span>{muted ? "Unmute" : "Mute"}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

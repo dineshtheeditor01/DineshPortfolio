@@ -294,10 +294,7 @@ export default function WorksPreview() {
             duration: 0.75,
             ease: "expo.out",
           });
-          videoElRef.current
-            ?.play()
-            .then(() => setPlaying(true))
-            .catch(() => {});
+          /* video is NOT auto-played — user must click the play button */
         },
       });
 
@@ -376,15 +373,53 @@ export default function WorksPreview() {
               style={S.videoEl}
               onPlay={() => setPlaying(true)}
               onPause={() => setPlaying(false)}
-            >
-              <source
-                src="/videos/works/Video 04 - KlickEdu Take Off Edit.mp4"
-                type="video/mp4"
-              />
-            </video>
+            />
 
             {/* 10% bottom gradient */}
             <div style={S.videoGrad} />
+
+            {/* Click-to-play overlay — hidden once playing */}
+            {!playing && (
+              <div
+                onClick={() => {
+                  const v = videoElRef.current;
+                  if (!v) return;
+                  if (!v.src) {
+                    v.src = "/videos/works/Video 04 - KlickEdu Take Off Edit.mp4";
+                    v.load();
+                  }
+                  v.play().then(() => setPlaying(true)).catch(() => {});
+                }}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(0,0,0,0.38)",
+                  cursor: "pointer",
+                  zIndex: 4,
+                }}
+              >
+                <div
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.12)",
+                    border: "1px solid rgba(255,255,255,0.3)",
+                    backdropFilter: "blur(8px)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <svg width="22" height="24" viewBox="0 0 22 24" fill="#fff">
+                    <path d="M0 0l22 12L0 24V0z" />
+                  </svg>
+                </div>
+              </div>
+            )}
 
             {/* ── Controls row ── */}
             <div style={S.controls}>

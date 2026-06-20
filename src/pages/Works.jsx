@@ -341,40 +341,37 @@ const T = {
 ═══════════════════════════════════════════════════════════════ */
 function VideoPlayer({ src, orientation }) {
   const vidRef = useRef(null);
-  const [loaded, setLoaded] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
+  const [buffering, setBuffering] = useState(true);
 
-  /* reset when src changes (navigating categories) */
+  /* autoplay when src changes (detail opens or navigates to new category) */
   useEffect(() => {
-    setLoaded(false);
-    setPlaying(false);
-    setMuted(true);
-  }, [src]);
-
-  const startPlayback = useCallback(() => {
     const v = vidRef.current;
     if (!v) return;
-    if (!loaded) {
-      v.src = src;
-      v.muted = true;
-      v.load();
-      setLoaded(true);
-    }
-    v.play().then(() => setPlaying(true)).catch(() => {});
-  }, [src, loaded]);
+    setPlaying(false);
+    setMuted(true);
+    setBuffering(true);
+    v.src = src;
+    v.muted = true;
+    v.load();
+    v.play()
+      .then(() => setPlaying(true))
+      .catch(() => {});
+  }, [src]);
 
   const togglePlay = useCallback(() => {
     const v = vidRef.current;
     if (!v) return;
-    if (!loaded) { startPlayback(); return; }
     if (v.paused) {
-      v.play().then(() => setPlaying(true)).catch(() => {});
+      v.play()
+        .then(() => setPlaying(true))
+        .catch(() => {});
     } else {
       v.pause();
       setPlaying(false);
     }
-  }, [loaded, startPlayback]);
+  }, []);
 
   const toggleMute = useCallback((e) => {
     e.stopPropagation();
@@ -403,126 +400,115 @@ function VideoPlayer({ src, orientation }) {
         loop
         playsInline
         preload="none"
+        onCanPlay={() => setBuffering(false)}
         onEnded={() => setPlaying(false)}
-        onClick={togglePlay}
         style={{
           width: "100%",
           height: "100%",
           objectFit: "cover",
           display: "block",
-          cursor: "pointer",
         }}
       />
 
-      {/* Bottom gradient for control readability */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 40%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Big centered play button — shown before first play */}
-      {!playing && (
+      {/* Spinner while buffering */}
+      {buffering && (
         <div
-          onClick={togglePlay}
           style={{
             position: "absolute",
             inset: 0,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 3,
-            cursor: "pointer",
+            zIndex: 2,
+            pointerEvents: "none",
           }}
         >
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.12)",
-              border: "1px solid rgba(255,255,255,0.28)",
-              backdropFilter: "blur(8px)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <IconPlay />
-          </div>
+          <div className="vid-spinner" />
         </div>
       )}
 
-      {/* Controls bar — visible once loaded */}
-      {loaded && (
-        <div
-          className="vid-controls"
+      {/* Bottom gradient for control readability */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 40%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Controls — always visible, play/pause is user's only control */}
+      <div
+        className="vid-controls"
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: "clamp(10px,2vw,16px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          zIndex: 4,
+        }}
+      >
+        <button
+          onClick={togglePlay}
           style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            padding: "clamp(10px,2vw,16px)",
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-            zIndex: 4,
+            gap: 8,
+            background: "rgba(0,0,0,0.6)",
+            border: "1px solid rgba(255,255,255,0.18)",
+            color: "#fff",
+            padding: "6px 14px",
+            cursor: "pointer",
+            fontFamily: "var(--font-mono)",
+            fontSize: FS.monoXs,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            transition: "background 0.2s",
           }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.background = "rgba(0,0,0,0.8)")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.background = "rgba(0,0,0,0.6)")
+          }
         >
-          <button
-            onClick={togglePlay}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              background: "rgba(255,255,255,0.1)",
-              border: "1px solid rgba(255,255,255,0.18)",
-              backdropFilter: "blur(8px)",
-              color: "#fff",
-              padding: "6px 14px",
-              cursor: "pointer",
-              fontFamily: "var(--font-mono)",
-              fontSize: FS.monoXs,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              transition: "background 0.2s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.2)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
-          >
-            {playing ? <IconPause /> : <IconPlay />}
-            <span>{playing ? "Pause" : "Play"}</span>
-          </button>
+          {playing ? <IconPause /> : <IconPlay />}
+          <span>{playing ? "Pause" : "Play"}</span>
+        </button>
 
-          <button
-            onClick={toggleMute}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              background: "rgba(255,255,255,0.1)",
-              border: "1px solid rgba(255,255,255,0.18)",
-              backdropFilter: "blur(8px)",
-              color: muted ? "rgba(255,255,255,0.55)" : "#fff",
-              padding: "6px 14px",
-              cursor: "pointer",
-              fontFamily: "var(--font-mono)",
-              fontSize: FS.monoXs,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              transition: "background 0.2s, color 0.2s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.2)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
-          >
-            {muted ? <IconMute /> : <IconUnmute />}
-            <span>{muted ? "Unmute" : "Mute"}</span>
-          </button>
-        </div>
-      )}
+        <button
+          onClick={toggleMute}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            background: "rgba(0,0,0,0.6)",
+            border: "1px solid rgba(255,255,255,0.18)",
+            color: muted ? "rgba(255,255,255,0.55)" : "#fff",
+            padding: "6px 14px",
+            cursor: "pointer",
+            fontFamily: "var(--font-mono)",
+            fontSize: FS.monoXs,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            transition: "background 0.2s, color 0.2s",
+          }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.background = "rgba(0,0,0,0.8)")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.background = "rgba(0,0,0,0.6)")
+          }
+        >
+          {muted ? <IconMute /> : <IconUnmute />}
+          <span>{muted ? "Unmute" : "Mute"}</span>
+        </button>
+      </div>
     </div>
   );
 }
@@ -836,6 +822,7 @@ function GraphicCard({ img, span = 1 }) {
           src={img.src}
           alt={img.alt}
           loading="lazy"
+          decoding="async"
           onError={() => setImgErr(true)}
           style={{
             width: "100%",
@@ -960,6 +947,7 @@ function RowThumb({ cat, hovered }) {
   const vidRef = useRef(null);
   const containerRef = useRef(null);
 
+  /* lazy-load first frame only — no playback, just thumbnail */
   useEffect(() => {
     if (isGraphic || !vidRef.current || !containerRef.current) return;
     const observer = new IntersectionObserver(
@@ -1007,6 +995,7 @@ function RowThumb({ cat, hovered }) {
               src={cat.images[0].src}
               alt=""
               loading="lazy"
+              decoding="async"
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
               onError={(e) => {
                 e.target.style.display = "none";
@@ -1028,10 +1017,10 @@ function RowThumb({ cat, hovered }) {
           </span>
         </div>
       ) : (
-        /* Video — src set lazily by IntersectionObserver, no preload until visible */
+        /* Video — first frame only, no playback */
         <video
           ref={vidRef}
-          preload="none"
+          preload="metadata"
           muted
           playsInline
           style={{
@@ -1041,36 +1030,6 @@ function RowThumb({ cat, hovered }) {
             display: "block",
           }}
         />
-      )}
-
-      {/* Play icon on hover */}
-      {hovered && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "rgba(0,0,0,0.4)",
-          }}
-        >
-          <div
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.9)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="#000">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </div>
-        </div>
       )}
     </div>
   );
@@ -1542,6 +1501,19 @@ export default function Works() {
         /* Video controls: always visible on touch */
         @media (hover: none) {
           .vid-controls { opacity: 1 !important; }
+        }
+
+        /* Buffering spinner */
+        @keyframes vid-spin {
+          to { transform: rotate(360deg); }
+        }
+        .vid-spinner {
+          width: 32px;
+          height: 32px;
+          border: 2px solid rgba(255,255,255,0.12);
+          border-top-color: rgba(255,255,255,0.7);
+          border-radius: 50%;
+          animation: vid-spin 0.75s linear infinite;
         }
       `}</style>
     </div>

@@ -73,8 +73,6 @@ const S = {
     height: "100%",
     objectFit: "cover",
     display: "block",
-    transform: "scale(1.08)" /* buffer for parallax */,
-    transformOrigin: "center center",
   },
 
   /* Bottom gradient — 10% height, inside video */
@@ -113,10 +111,8 @@ const S = {
     alignItems: "center",
     justifyContent: "center",
     gap: 5,
-    background: "rgba(0,0,0,0.52)",
+    background: "rgba(0,0,0,0.6)",
     border: "1px solid rgba(255,255,255,0.13)",
-    backdropFilter: "blur(10px)",
-    WebkitBackdropFilter: "blur(10px)",
     color: "rgba(255,255,255,0.8)",
     fontFamily: "var(--font-mono)",
     fontSize: FS.labelSm,
@@ -126,33 +122,6 @@ const S = {
     cursor: "pointer",
     lineHeight: 1,
     whiteSpace: "nowrap",
-  },
-  timecode: {
-    fontFamily: "var(--font-mono)",
-    fontSize: FS.labelSm,
-    letterSpacing: "0.1em",
-    color: "rgba(255,255,255,0.28)",
-    textTransform: "uppercase",
-    userSelect: "none",
-  },
-
-  /* Badge top-right */
-  badge: {
-    position: "absolute",
-    top: "clamp(10px,1.5vw,16px)",
-    right: "clamp(10px,1.5vw,16px)",
-    background: "rgba(0,0,0,0.45)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    backdropFilter: "blur(8px)",
-    WebkitBackdropFilter: "blur(8px)",
-    padding: "3px 10px",
-    fontFamily: "var(--font-mono)",
-    fontSize: FS.labelSm,
-    letterSpacing: "0.14em",
-    textTransform: "uppercase",
-    color: "rgba(255,255,255,0.35)",
-    zIndex: 2,
-    pointerEvents: "none",
   },
 
   /* ── CTA below video ── */
@@ -203,21 +172,6 @@ export default function WorksPreview() {
 
   const [muted, setMuted] = useState(true);
   const [playing, setPlaying] = useState(false);
-  const [timecode, setTimecode] = useState("00:00");
-
-  /* ── Timecode ticker ── */
-  useEffect(() => {
-    if (!playing) return;
-    const iv = setInterval(() => {
-      const v = videoElRef.current;
-      if (!v) return;
-      const t = v.currentTime;
-      const m = String(Math.floor(t / 60)).padStart(2, "0");
-      const s = String(Math.floor(t % 60)).padStart(2, "0");
-      setTimecode(`${m}:${s}`);
-    }, 250);
-    return () => clearInterval(iv);
-  }, [playing]);
 
   /* ── Play / Pause toggle ── */
   const togglePlay = useCallback(() => {
@@ -247,7 +201,6 @@ export default function WorksPreview() {
 
   /* ── GSAP ── */
   useLayoutEffect(() => {
-    /* detect mobile once */
     const isMobile = window.innerWidth < 640;
 
     /* initial video width */
@@ -281,7 +234,7 @@ export default function WorksPreview() {
         },
       });
 
-      /* video block reveal */
+      /* video block reveal + autoplay */
       gsap.set(videoWrapRef.current, { opacity: 0, scale: 0.95 });
       ScrollTrigger.create({
         trigger: videoWrapRef.current,
@@ -294,7 +247,12 @@ export default function WorksPreview() {
             duration: 0.75,
             ease: "expo.out",
           });
-          /* video is NOT auto-played — user must click the play button */
+          const v = videoElRef.current;
+          if (v && !v.src) {
+            v.src = "/videos/works/Video 04 - KlickEdu Take Off Edit.mp4";
+            v.load();
+            v.play().then(() => setPlaying(true)).catch(() => {});
+          }
         },
       });
 
@@ -308,20 +266,6 @@ export default function WorksPreview() {
             start: "top 60%",
             end: "bottom 20%",
             scrub: 1.4,
-          },
-        });
-      }
-
-      /* subtle video parallax */
-      if (videoElRef.current) {
-        gsap.to(videoElRef.current, {
-          yPercent: 5,
-          ease: "none",
-          scrollTrigger: {
-            trigger: videoInnerRef.current,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1.2,
           },
         });
       }
@@ -378,49 +322,6 @@ export default function WorksPreview() {
             {/* 10% bottom gradient */}
             <div style={S.videoGrad} />
 
-            {/* Click-to-play overlay — hidden once playing */}
-            {!playing && (
-              <div
-                onClick={() => {
-                  const v = videoElRef.current;
-                  if (!v) return;
-                  if (!v.src) {
-                    v.src = "/videos/works/Video 04 - KlickEdu Take Off Edit.mp4";
-                    v.load();
-                  }
-                  v.play().then(() => setPlaying(true)).catch(() => {});
-                }}
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "rgba(0,0,0,0.38)",
-                  cursor: "pointer",
-                  zIndex: 4,
-                }}
-              >
-                <div
-                  style={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: "50%",
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1px solid rgba(255,255,255,0.3)",
-                    backdropFilter: "blur(8px)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <svg width="22" height="24" viewBox="0 0 22 24" fill="#fff">
-                    <path d="M0 0l22 12L0 24V0z" />
-                  </svg>
-                </div>
-              </div>
-            )}
-
             {/* ── Controls row ── */}
             <div style={S.controls}>
               <div style={S.controlsLeft}>
@@ -443,8 +344,6 @@ export default function WorksPreview() {
                 </button>
               </div>
 
-              {/* Timecode */}
-              <span style={S.timecode}>TC {timecode}</span>
             </div>
           </div>
         </div>

@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\zyndur\\\\Desktop\\\\DineshPortfolio\\\\public\\\\videos\\\\works\" | Select-Object Name, @{N='Size\\(MB\\)';E={[math]::Round\\($_.Length/1MB,1\\)}})",
+      "PowerShell(npm install --save-dev sharp)"
     ]
   }
 }

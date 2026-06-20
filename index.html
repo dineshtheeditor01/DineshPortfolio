@@ -10,7 +10,10 @@
   <title>DINESH R | The Video Editor</title>
 
   <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="/public/icon.jpeg" style="border-radius: 50%;"/>
+  <link rel="icon" type="image/x-icon" href="/icon.jpeg" style="border-radius: 50%;" />
+
+  <!-- Preload LCP hero image — must happen before render -->
+  <link rel="preload" as="image" href="/images/Hero.webp" fetchpriority="high" />
 
   <!-- Google Fonts — preconnect first, then stylesheet (non-blocking order) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />

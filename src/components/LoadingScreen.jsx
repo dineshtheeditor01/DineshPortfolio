@@ -122,6 +122,8 @@ if (typeof document !== "undefined" && !document.getElementById("ld-styles")) {
 /* ═══════════════════════════════════════════════════════
    COMPONENT
 ═══════════════════════════════════════════════════════ */
+const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+
 export default function LoadingScreen({ onDone }) {
   const [pct, setPct] = useState(0);
   const [statusIdx, setStatusIdx] = useState(0);
@@ -276,34 +278,41 @@ export default function LoadingScreen({ onDone }) {
 
       {/* ── center block ── */}
       <div style={sCenter}>
-        {/* name — FuzzyText canvas */}
+        {/* name — FuzzyText on desktop, plain heading on mobile (canvas CSS-scaling shrinks text too much on narrow screens) */}
         <div className="ld-name-fuzzy" style={sNameRow}>
-          <FuzzyText
-            fontSize="clamp(68px, 17vw, 190px)"
-            fontFamily="'Clausten', sans-serif"
-            fontWeight={400}
-            gradient={[
-              "#F0F0F0",
-              "#F0F0F0",
-              "#F0F0F0",
-              "#F0F0F0",
-              "#F0F0F0",
-              "#F0F0F0",
-              "#F0F0F0",
-              ACCENT,
-            ]}
-            baseIntensity={0.12}
-            hoverIntensity={0.45}
-            glitchMode={true}
-            glitchInterval={4500}
-            glitchDuration={180}
-            fps={24}
-            fuzzRange={28}
-            transitionDuration={6}
-            enableHover={true}
-          >
-            {CFG.name} {CFG.nameAccent}
-          </FuzzyText>
+          {isMobile ? (
+            <div style={sMobileName}>
+              {CFG.name}{" "}
+              <span style={{ color: ACCENT }}>{CFG.nameAccent}</span>
+            </div>
+          ) : (
+            <FuzzyText
+              fontSize="clamp(68px, 17vw, 190px)"
+              fontFamily="'Clausten', sans-serif"
+              fontWeight={400}
+              gradient={[
+                "#F0F0F0",
+                "#F0F0F0",
+                "#F0F0F0",
+                "#F0F0F0",
+                "#F0F0F0",
+                "#F0F0F0",
+                "#F0F0F0",
+                ACCENT,
+              ]}
+              baseIntensity={0.12}
+              hoverIntensity={0.45}
+              glitchMode={true}
+              glitchInterval={4500}
+              glitchDuration={180}
+              fps={24}
+              fuzzRange={28}
+              transitionDuration={6}
+              enableHover={true}
+            >
+              {CFG.name} {CFG.nameAccent}
+            </FuzzyText>
+          )}
         </div>
 
         {/* role */}
@@ -428,6 +437,19 @@ const sNameRow = {
   lineHeight: 0.9,
   maxWidth: "100%",
   overflow: "hidden",
+};
+
+const sMobileName = {
+  fontFamily: "'Clausten', sans-serif",
+  fontWeight: 400,
+  /* 16.5vw ≈ 64px on iPhone SE (375px), ≈ 67px on iPhone 14 (390px)
+     Plain CSS text renders at exactly this size — no canvas scaling loss */
+  fontSize: "clamp(58px, 16.5vw, 120px)",
+  lineHeight: 0.9,
+  color: "#F0F0F0",
+  letterSpacing: "0.02em",
+  textAlign: "center",
+  whiteSpace: "nowrap",
 };
 
 const sRole = {

@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from "react";
+﻿import { useRef, useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -156,9 +156,9 @@ const CATEGORIES = [
     driveUrl:
       "https://drive.google.com/drive/folders/1tpfLQ-4XCdOlPfXnMiO7f10O8jKHGGQa?usp=sharing",
     images: [
-      { src: "/images/works/poster (1).jpg", alt: "Brand Identity" },
-      { src: "/images/works/poster (2).jpg", alt: "Social Media Design" },
-      { src: "/images/works/poster (3).jpeg", alt: "Poster Design" },
+      { src: "/images/works/poster (1).webp", alt: "Brand Identity" },
+      { src: "/images/works/poster (2).webp", alt: "Social Media Design" },
+      { src: "/images/works/poster (3).webp", alt: "Poster Design" },
     ],
   },
 ];
@@ -398,7 +398,7 @@ function VideoPlayer({ src, orientation, catId }) {
         ref={vidRef}
         loop
         playsInline
-        preload="auto"
+        preload="metadata"
         onEnded={handleEnded}
         onClick={togglePlay}
         style={{
@@ -932,9 +932,27 @@ function GraphicCard({ img, span = 1 }) {
 ═══════════════════════════════════════════════════════════════ */
 function RowThumb({ cat, hovered }) {
   const isGraphic = cat.type === "graphic";
+  const vidRef = useRef(null);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (isGraphic || !vidRef.current || !containerRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && vidRef.current && !vidRef.current.src) {
+          vidRef.current.src = cat.videoSrc;
+          vidRef.current.load();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [cat.videoSrc, isGraphic]);
 
   return (
     <div
+      ref={containerRef}
       style={{
         width: 80,
         aspectRatio: "16/11",
@@ -963,6 +981,7 @@ function RowThumb({ cat, hovered }) {
             <img
               src={cat.images[0].src}
               alt=""
+              loading="lazy"
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
               onError={(e) => {
                 e.target.style.display = "none";
@@ -984,10 +1003,10 @@ function RowThumb({ cat, hovered }) {
           </span>
         </div>
       ) : (
-        /* Video — preload="metadata" shows first frame */
+        /* Video — src set lazily by IntersectionObserver, no preload until visible */
         <video
-          src={cat.videoSrc}
-          preload="metadata"
+          ref={vidRef}
+          preload="none"
           muted
           playsInline
           style={{

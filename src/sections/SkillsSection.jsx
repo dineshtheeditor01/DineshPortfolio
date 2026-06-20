@@ -1,4 +1,4 @@
-import { useRef, useEffect, useLayoutEffect, useCallback, useState } from "react";
+﻿import { useRef, useEffect, useLayoutEffect, useCallback, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FS, STYLE, HEADING } from "../theme";
@@ -11,7 +11,7 @@ const CATEGORIES = {
     items: [
       {
         id: "ae",
-        image: "/images/Ae.png",
+        image: "/images/Ae.webp",
         name: "After Effects",
         color: "#9999FF",
         category: "Video & Motion",
@@ -28,11 +28,11 @@ const CATEGORIES = {
       },
       {
         id: "pr",
-        image: "/images/Pr.png",
+        image: "/images/Pr.webp",
         name: "Premiere Pro",
         color: "#E8A0FF",
         category: "Video & Motion",
-        proficiency: 90,
+        proficiency: 95,
         desc: "Professional editing suite used for reels, documentaries, advertisements, product videos, wedding films, long-form content, and branded storytelling.",
         uses: [
           "Video Editing",
@@ -51,7 +51,7 @@ const CATEGORIES = {
         name: "DaVinci Resolve",
         color: "#6BA5D9",
         category: "Video & Motion",
-        proficiency: 85,
+        proficiency: 80,
         desc: "Advanced color grading and finishing tool used to enhance cinematic visuals, improve skin tones, and create consistent visual aesthetics.",
         uses: [
           "Color Grading",
@@ -64,11 +64,11 @@ const CATEGORIES = {
       },
       {
         id: "ps",
-        image: "/images/Photoshop.png",
+        image: "/images/Photoshop.webp",
         name: "Photoshop",
         color: "#4BC8FF",
         category: "Design & Visual",
-        proficiency: 92,
+        proficiency: 95,
         desc: "Creative design tool for posters, thumbnails, social media creatives, product promotions, photo manipulation, and marketing visuals.",
         uses: [
           "Poster Design",
@@ -81,11 +81,11 @@ const CATEGORIES = {
       },
       {
         id: "ai",
-        image: "/images/Ai.png",
+        image: "/images/Ai.webp",
         name: "Illustrator",
         color: "#FF9A00",
         category: "Design & Visual",
-        proficiency: 80,
+        proficiency: 95,
         desc: "Vector design software used for logo creation, brand assets, illustrations, icons, and scalable marketing graphics.",
         uses: [
           "Logo Design",
@@ -98,11 +98,11 @@ const CATEGORIES = {
       },
       {
         id: "au",
-        image: "/images/Au.png",
+        image: "/images/Au.webp",
         name: "Audition",
         color: "#00E0B8",
         category: "Audio Production",
-        proficiency: 82,
+        proficiency: 80,
         desc: "Audio editing and sound design software used for voice enhancement, SFX integration, audio cleanup, mixing, and final sound polish.",
         uses: [
           "Sound Design",
@@ -115,11 +115,11 @@ const CATEGORIES = {
       },
       {
         id: "me",
-        image: "/images/Me.png",
+        image: "/images/Me.webp",
         name: "Media Encoder",
         color: "#7C5CFC",
         category: "Video & Motion",
-        proficiency: 85,
+        proficiency: 100,
         desc: "Optimizes export workflows through batch rendering, format conversion, and platform-ready video delivery across multiple channels.",
         uses: [
           "Batch Rendering",
@@ -136,7 +136,7 @@ const CATEGORIES = {
         name: "Canva",
         color: "#A855F7",
         category: "Design & Visual",
-        proficiency: 88,
+        proficiency: 85,
         desc: "Rapid content creation platform used for social media designs, presentations, promotional materials, and marketing campaigns.",
         uses: [
           "Social Media Design",
@@ -155,11 +155,11 @@ const CATEGORIES = {
     items: [
       {
         id: "gpt",
-        image: "/images/ChatGPT png.png",
+        image: "/images/ChatGPT png.webp",
         name: "ChatGPT",
         color: "#4ADE80",
         category: "AI Tools",
-        proficiency: 88,
+        proficiency: 85,
         desc: "Creative assistant for scripting, storytelling, content ideation, copywriting, creative problem-solving, and streamlining production workflows.",
         uses: [
           "Script Writing",
@@ -177,7 +177,7 @@ const CATEGORIES = {
         name: "Gemini",
         color: "#9B72CB",
         category: "AI Tools",
-        proficiency: 76,
+        proficiency: 85,
         desc: "Multimodal AI assistant used for brainstorming concepts, analyzing visual references, planning content, and accelerating creative workflows.",
         uses: [
           "Creative Research",
@@ -191,11 +191,11 @@ const CATEGORIES = {
 
       {
         id: "el",
-        image: "/images/ElevenLabs.png",
+        image: "/images/ElevenLabs.webp",
         name: "ElevenLabs",
         color: "#E5E5E5",
         category: "AI Tools",
-        proficiency: 78,
+        proficiency: 85,
         desc: "AI voice platform used for professional voiceovers, narrations, advertisements, explainers, and multilingual content production.",
         uses: [
           "Voiceovers",
@@ -209,7 +209,7 @@ const CATEGORIES = {
 
       {
         id: "rw",
-        image: "/images/Runway_Logo png.png",
+        image: "/images/Runway_Logo png.webp",
         name: "Runway",
         color: "#C084FC",
         category: "AI Tools",
@@ -231,7 +231,7 @@ const CATEGORIES = {
         name: "Freepik AI",
         color: "#5B9CF6",
         category: "AI Tools",
-        proficiency: 82,
+        proficiency: 85,
         desc: "AI-assisted design platform used for concept generation, marketing visuals, thumbnails, mood boards, and creative asset development.",
         uses: [
           "AI Images",
@@ -245,11 +245,11 @@ const CATEGORIES = {
 
       {
         id: "px",
-        image: "/images/perplexity-logo.png",
+        image: "/images/perplexity-logo.webp",
         name: "Perplexity",
         color: "#20B8CD",
         category: "AI Tools",
-        proficiency: 83,
+        proficiency: 85,
         desc: "Research and discovery platform used for trend analysis, fact-checking, content research, audience insights, and strategic planning.",
         uses: [
           "Research",

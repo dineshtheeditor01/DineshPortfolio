@@ -327,10 +327,13 @@ export default function HeroSection() {
 
                 {/* ── REAL PHOTO — <img> tag, portrait crop ── */}
                 <img
-                  src="/images/Hero.jpeg"
+                  src="/images/Hero.webp"
                   alt="Dinesh R — Motion Graphics & Video Editor"
                   loading="eager"
                   decoding="async"
+                  fetchpriority="high"
+                  width="600"
+                  height="800"
                   className="portrait-img"
                   onError={(e) => {
                     e.target.style.opacity = "0";

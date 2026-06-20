@@ -60,7 +60,7 @@ export const STYLE = {
   body: {
     fontFamily: "var(--font-body)",
     fontSize: FS.body,
-    fontWeight: 300,
+    fontWeight: 500,
     lineHeight: 1.75,
     color: "var(--text-muted)",
   },

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useState, lazy, Suspense } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollProgress from "./components/ScrollProgress";
@@ -46,6 +47,7 @@ export default function App() {
           @media (min-width: 768px) { :root { --dock-pad: 0px; } }
         `}</style>
       </BrowserRouter>
+      <SpeedInsights />
     </>
   );
 }

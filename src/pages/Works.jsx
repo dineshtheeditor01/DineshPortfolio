@@ -355,14 +355,18 @@ function VideoPlayer({ src, orientation }) {
     v.src = src;
     v.muted = true;
     v.load();
-    v.play().then(() => setPlaying(true)).catch(() => {});
+    v.play()
+      .then(() => setPlaying(true))
+      .catch(() => {});
   }, [src]);
 
   const togglePlay = useCallback(() => {
     const v = vidRef.current;
     if (!v) return;
     if (v.paused) {
-      v.play().then(() => setPlaying(true)).catch(() => {});
+      v.play()
+        .then(() => setPlaying(true))
+        .catch(() => {});
     } else {
       v.pause();
       setPlaying(false);
@@ -428,7 +432,8 @@ function VideoPlayer({ src, orientation }) {
         style={{
           position: "absolute",
           inset: 0,
-          background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 40%)",
+          background:
+            "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 40%)",
           pointerEvents: "none",
         }}
       />
@@ -465,8 +470,12 @@ function VideoPlayer({ src, orientation }) {
             textTransform: "uppercase",
             transition: "background 0.2s",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.8)")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.6)")}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.background = "rgba(0,0,0,0.8)")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.background = "rgba(0,0,0,0.6)")
+          }
         >
           {playing ? <IconPause /> : <IconPlay />}
           <span>{playing ? "Pause" : "Play"}</span>
@@ -489,8 +498,12 @@ function VideoPlayer({ src, orientation }) {
             textTransform: "uppercase",
             transition: "background 0.2s, color 0.2s",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.8)")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.6)")}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.background = "rgba(0,0,0,0.8)")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.background = "rgba(0,0,0,0.6)")
+          }
         >
           {muted ? <IconMute /> : <IconUnmute />}
           <span>{muted ? "Unmute" : "Mute"}</span>
@@ -1018,7 +1031,6 @@ function RowThumb({ cat, hovered }) {
           }}
         />
       )}
-
     </div>
   );
 }

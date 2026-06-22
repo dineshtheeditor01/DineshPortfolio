@@ -227,7 +227,7 @@ const CATEGORIES = {
 
       {
         id: "fp",
-        image: "/images/Freepik png.webp",
+        image: "/images/Freepik png.png",
         name: "Freepik AI",
         color: "#5B9CF6",
         category: "AI Tools",
